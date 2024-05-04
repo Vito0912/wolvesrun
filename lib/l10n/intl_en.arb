@@ -1,0 +1,19 @@
+{
+  "@@local": "en",
+
+  "settingsTitle": "Settings",
+  "commonHeading": "Common",
+  "language": "Language",
+  "theme": "Theme",
+  "dark": "Dark Mode",
+  "light": "Light Mode",
+  "system": "System",
+  "other": "Other",
+  "attribution": "Attribution",
+  "systemInformations": "System Informations",
+    "systemInformationsDesc": "This page shows you some informations about your system.",
+  "version": "Version",
+    "author": "Author",
+    "license": "License",
+  "errorLoadingData": "There was an error loading the data."
+}
