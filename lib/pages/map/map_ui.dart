@@ -149,7 +149,60 @@ class _MapUiState extends State<MapUi> {
                   strokeWidth: 4,
                   color: Colors.red,
                 )
-              ])
+              ]),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 100,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                      bottomRight: Radius.circular(40.0),
+                      bottomLeft: Radius.circular(40.0)),
+                  color: Colors.white.withOpacity(0.9),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal:  16.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Distance: ${_path.distance.toStringAsFixed(2)} m',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            'Real distance: ${BetterPosition.calculateTotalDistance(path)} m',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Duration: ${BetterPosition.calculateTotalTimeAndFormat(path)}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Waypoints: ${_path.coordinates.length}/${path.length}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            'Pos: ${_currentPosition?.latLng.latitude.toStringAsFixed(6)}, ${_currentPosition?.latLng.longitude.toStringAsFixed(6)}',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              )
             ],
           ),
         ],

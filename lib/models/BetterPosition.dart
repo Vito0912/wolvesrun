@@ -40,4 +40,35 @@ class BetterPosition {
         heading = position.heading,
         speed = position.speed,
         speedAccuracy = position.speedAccuracy;
+
+
+  static double calculateTotalDistance(List<BetterPosition> positions) {
+    const Distance distance = Distance();
+    double totalDistance = 0.0;
+
+    for (int i = 0; i < positions.length - 1; i++) {
+      totalDistance += distance(
+        positions[i].latLng,
+        positions[i + 1].latLng,
+      );
+    }
+
+    return totalDistance;
+  }
+
+  static String calculateTotalTimeAndFormat(List<BetterPosition> positions) {
+    if (positions.isEmpty || positions.length < 2) {
+      return "No enough data to calculate duration";
+    }
+
+    DateTime startTime = positions.first.timestamp;
+    DateTime endTime = positions.last.timestamp;
+    Duration totalDuration = endTime.difference(startTime);
+
+    return formatDuration(totalDuration);
+  }
+
+  static String formatDuration(Duration duration) {
+    return '${duration.inHours} hours, ${duration.inMinutes.remainder(60)} minutes, ${duration.inSeconds.remainder(60)} seconds';
+  }
 }
