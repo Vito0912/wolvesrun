@@ -1,15 +1,25 @@
+import 'package:background_location/background_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:wolvesrun/pages/NavBarBuilder.dart';
 import 'package:wolvesrun/pages/map/map_ui.dart';
 import 'package:wolvesrun/pages/settings/setting_ui.dart';
+import 'package:wolvesrun/services/NotifcationService.dart';
 
 import 'generated/l10n.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+
+  await NotificationService().requestPermissions();
+
+
   runApp(const MyApp());
+
+
+
 }
 
 class MyApp extends StatelessWidget {
@@ -30,6 +40,21 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
         S.delegate
       ],
+      onGenerateTitle: (BuildContext context) {
+
+        BackgroundLocation.setAndroidNotification(
+
+          title: S.current.settingsTitle,
+          message: "Notification message",
+          icon: "@mipmap/ic_launcher",
+        );
+
+        BackgroundLocation.setAndroidConfiguration(3000);
+        BackgroundLocation.startLocationService();
+
+
+        return S.of(context).settingsTitle;
+      },
       supportedLocales: const AppLocalizationDelegate().supportedLocales,
       home: Builder(
         builder: (context) {
