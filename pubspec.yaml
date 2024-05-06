@@ -38,7 +38,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any # BSD-3-Clause
-  intl_utils: any # BSD-3-Clause
+  intl_utils: ^2.8.7 # BSD-3-Clause
   flutter_map: ^6.1.0 # BSD-3-Clause
   latlong2: ^0.9.1 # Apache-2.0
   geolocator: ^11.0.0 # MIT
@@ -53,6 +53,8 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.21 # MIT
   path_provider: ^2.1.3 # BSD-3-Clause
   flutter_map_cache: ^1.5.0 # MIT
+  http: ^1.2.1
+  shared_preferences: ^2.2.3 # BSD-3-Clause
 
 dev_dependencies:
   flutter_test:

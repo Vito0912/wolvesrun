@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dio_cache_interceptor_db_store/dio_cache_interceptor_db_store.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,6 +12,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wolvesrun/models/BetterPosition.dart';
+import 'package:http/http.dart' as http;
+import 'package:wolvesrun/services/network/ApiPaths.dart';
 
 class MapUi extends StatefulWidget {
   const MapUi({super.key});
@@ -34,6 +37,7 @@ class _MapUiState extends State<MapUi> {
   StreamSubscription<Position>? _positionStream;
 
   MapController mapController = MapController();
+  List<Marker> _markerList = [];
 
   @override
   void initState() {
@@ -56,6 +60,44 @@ class _MapUiState extends State<MapUi> {
           print(path);
           if (path.length == 1) {
             mapController.move(path.first.latLng, 15);
+            http
+                .get(Uri.parse(ApiPaths.itemPoints(
+                    path.first.latLng.longitude, path.first.latLng.latitude)))
+                .then((http.Response value) {
+              jsonDecode(value.body)['response'].forEach((value) {
+                _markerList.add(Marker(
+                  point: LatLng(value['lat'], value['lng']),
+                  width: 16,
+                  height: 16,
+                  child: const Icon(
+                    Icons.outlined_flag,
+                    color: Colors.redAccent,
+                  ),
+                ));
+              });
+              dynamic json = jsonDecode(value.body);
+              _markerList.add(Marker(
+                point: LatLng(json['data']['sw_corner']['latitude'],
+                    json['data']['sw_corner']['longitude']),
+                width: 16,
+                height: 16,
+                child: const Icon(
+                  Icons.outlined_flag,
+                  color: Colors.green,
+                ),
+              ));
+
+              _markerList.add(Marker(
+                point: LatLng(json['data']['ne_corner']['latitude'],
+                    json['data']['ne_corner']['longitude']),
+                width: 16,
+                height: 16,
+                child: const Icon(
+                  Icons.outlined_flag,
+                  color: Colors.green,
+                ),
+              ));
+            });
           }
 
           setState(() {
@@ -140,6 +182,7 @@ class _MapUiState extends State<MapUi> {
                                 );
                               }),
                         ),
+                        ..._markerList
                       ],
                     )
                   : Container(),
@@ -160,7 +203,7 @@ class _MapUiState extends State<MapUi> {
                   color: Colors.white.withOpacity(0.9),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal:  16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     children: [
                       Row(
@@ -174,7 +217,6 @@ class _MapUiState extends State<MapUi> {
                             'Real distance: ${BetterPosition.calculateTotalDistance(path)} m',
                             style: const TextStyle(fontSize: 16),
                           ),
-
                         ],
                       ),
                       Row(

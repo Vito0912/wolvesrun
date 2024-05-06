@@ -6,20 +6,24 @@ import 'package:wolvesrun/pages/NavBarBuilder.dart';
 import 'package:wolvesrun/pages/map/map_ui.dart';
 import 'package:wolvesrun/pages/settings/setting_ui.dart';
 import 'package:wolvesrun/services/NotifcationService.dart';
+import 'package:wolvesrun/globals.dart' as globals;
+import 'package:wolvesrun/util/Prefernces.dart';
 
 import 'generated/l10n.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SP sp = SP();
 
+  globals.wolvesRunServer =
+      await sp.getString("server") ?? globals.wolvesRunServer;
+
+  globals.useDarkTheme =
+      await sp.getBool("useDarkTheme") ?? globals.useDarkTheme;
 
   await NotificationService().requestPermissions();
 
-
   runApp(const MyApp());
-
-
-
 }
 
 class MyApp extends StatelessWidget {
@@ -41,9 +45,7 @@ class MyApp extends StatelessWidget {
         S.delegate
       ],
       onGenerateTitle: (BuildContext context) {
-
         BackgroundLocation.setAndroidNotification(
-
           title: S.current.settingsTitle,
           message: "Notification message",
           icon: "@mipmap/ic_launcher",
@@ -52,44 +54,40 @@ class MyApp extends StatelessWidget {
         BackgroundLocation.setAndroidConfiguration(3000);
         BackgroundLocation.startLocationService();
 
-
         return S.of(context).settingsTitle;
       },
       supportedLocales: const AppLocalizationDelegate().supportedLocales,
-      home: Builder(
-        builder: (context) {
-          return PersistentTabView(
-            tabs: [
-              PersistentTabConfig(
-                screen: Placeholder(),
-                item: ItemConfig(
-                  icon: Icon(Icons.home),
-                  title: "Home",
-                ),
+      home: Builder(builder: (context) {
+        return PersistentTabView(
+          tabs: [
+            PersistentTabConfig(
+              screen: Placeholder(),
+              item: ItemConfig(
+                icon: Icon(Icons.home),
+                title: "Home",
               ),
-              PersistentTabConfig(
-                screen: MapUi(),
-                item: ItemConfig(
-                  icon: Icon(Icons.map_rounded),
-                  title: "Map",
-                ),
-              ),
-              PersistentTabConfig(
-                screen: const SettingUi(),
-                item: ItemConfig(
-                  icon: Icon(Icons.settings),
-                  title: S.of(context).settingsTitle,
-                ),
-              ),
-            ],
-            navBarBuilder: (navBarConfig) => CustomNavBar(
-              navBarConfig: navBarConfig,
-              key: const Key("navBar"),
             ),
-          );
-        }
-      ),
+            PersistentTabConfig(
+              screen: MapUi(),
+              item: ItemConfig(
+                icon: Icon(Icons.map_rounded),
+                title: "Map",
+              ),
+            ),
+            PersistentTabConfig(
+              screen: const SettingUi(),
+              item: ItemConfig(
+                icon: Icon(Icons.settings),
+                title: S.of(context).settingsTitle,
+              ),
+            ),
+          ],
+          navBarBuilder: (navBarConfig) => CustomNavBar(
+            navBarConfig: navBarConfig,
+            key: const Key("navBar"),
+          ),
+        );
+      }),
     );
   }
 }
-
