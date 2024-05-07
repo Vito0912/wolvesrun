@@ -11,4 +11,6 @@ class ApiPaths {
 
   static String itemPoints(double longitude, double latitude) =>
       '$fullApiUrl/resources/spawn?lat=$latitude&lng=$longitude';
+
+  static String get position => '$fullApiUrl/position';
 }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:wolvesrun/generated/l10n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:wolvesrun/globals.dart' as globals;
+import 'package:wolvesrun/util/Prefernces.dart';
 
 class SettingUi extends StatelessWidget {
   const SettingUi({super.key});
@@ -27,11 +29,44 @@ class SettingUi extends StatelessWidget {
                 },
               ),
               SettingsTile.switchTile(
-                onToggle: (value) {},
-                initialValue: true,
+                onToggle: (value) {
+                  globals.useDarkTheme = value;
+                },
+                initialValue: globals.useDarkTheme,
                 leading: Icon(Icons.format_paint),
                 title: Text('Enable custom theme'),
               ),
+              SettingsTile(
+                title: Text('Change server'),
+                leading: Icon(Icons.cloud),
+                onPressed: (_) {
+                  showDialog(context: context, builder: (context) {
+                    var txt = TextEditingController();
+                    txt.text = globals.wolvesRunServer;
+                    return AlertDialog(
+                      title: Text('Change server'),
+                      content: Column(
+                        children: [
+                          TextField(
+                            controller: txt,
+                            decoration: InputDecoration(
+                              hintText: 'Server URL'
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              SP().updateString("server", txt.text);
+                              globals.wolvesRunServer = txt.text;
+                              Navigator.pop(context);
+                            },
+                            child: Text('Save'),
+                          )
+                        ],
+                      ),
+                    );
+                  });
+                }
+              )
             ],
           ),
           SettingsSection(
