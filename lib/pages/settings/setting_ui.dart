@@ -1,14 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:wolvesrun/generated/l10n.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wolvesrun/globals.dart' as globals;
-import 'package:wolvesrun/util/Prefernces.dart';
+import 'package:wolvesrun/pages/settings/UserChip.dart';
+import 'package:wolvesrun/util/Preferences.dart';
 
-class SettingUi extends StatelessWidget {
+class SettingUi extends StatefulWidget {
   const SettingUi({super.key});
 
+  @override
+  State<SettingUi> createState() => _SettingUiState();
+}
+
+class _SettingUiState extends State<SettingUi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,24 +27,31 @@ class SettingUi extends StatelessWidget {
           SettingsSection(
             title: Text(S.of(context).commonHeading),
             tiles: <SettingsTile>[
+
+              UserChip(title: Text("Texst")),
+
               SettingsTile.navigation(
                 leading: Icon(Icons.language),
                 title: Text(S.of(context).language),
-                value: Text("English"),
+                value: Text(Intl.getCurrentLocale()),
                 onPressed: (_) {
 
                 },
               ),
               SettingsTile.switchTile(
                 onToggle: (value) {
-                  globals.useDarkTheme = value;
+                  setState(() {
+                    globals.useDarkTheme = value;
+                  });
+                  SP().updateBool("useDarkTheme", value);
                 },
                 initialValue: globals.useDarkTheme,
                 leading: Icon(Icons.format_paint),
-                title: Text('Enable custom theme'),
+                title: Text('Use Dark Mode'),
               ),
               SettingsTile(
                 title: Text('Change server'),
+                description: Text(globals.wolvesRunServer),
                 leading: Icon(Icons.cloud),
                 onPressed: (_) {
                   showDialog(context: context, builder: (context) {
@@ -46,17 +60,21 @@ class SettingUi extends StatelessWidget {
                     return AlertDialog(
                       title: Text('Change server'),
                       content: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           TextField(
                             controller: txt,
                             decoration: InputDecoration(
-                              hintText: 'Server URL'
+                              hintText: S.of(context).serverUrl
                             ),
                           ),
+                          const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () {
-                              SP().updateString("server", txt.text);
-                              globals.wolvesRunServer = txt.text;
+                              setState(() {
+                                SP().updateString("server", txt.text);
+                                globals.wolvesRunServer = txt.text;
+                              });
                               Navigator.pop(context);
                             },
                             child: Text('Save'),

@@ -55,6 +55,8 @@ dependencies:
   flutter_map_cache: ^1.5.0 # MIT
   http: ^1.2.1
   shared_preferences: ^2.2.3 # BSD-3-Clause
+  connectivity_plus: ^6.0.3 # BSD-3-Clause
+  device_info_plus: ^10.1.0 # BSD-3-Clause
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +80,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/images/auth/login_image.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

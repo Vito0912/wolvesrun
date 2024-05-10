@@ -13,6 +13,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wolvesrun/models/BetterPosition.dart';
 import 'package:http/http.dart' as http;
+import 'package:wolvesrun/services/network/ApiHeaders.dart';
 import 'package:wolvesrun/services/network/ApiPaths.dart';
 
 class MapUi extends StatefulWidget {
@@ -99,6 +100,23 @@ class _MapUiState extends State<MapUi> {
               ));
             });
           }
+
+          final body = {
+            'lat': position.latitude.toString(),
+            'lng': position.longitude.toString(),
+            'accuracy': position.accuracy.toString(),
+            'altitude': position.altitude.toString(),
+            'heading': int.tryParse(position.heading.toString()),
+            'speed': position.speed.toString(),
+            'timestamp': position.timestamp.toString(),
+            'run_id': 1,
+          };
+          print(body);
+          http
+              .post(Uri.parse(ApiPaths.position),
+                  headers: ApiHeaders.headersWithToken,
+                  body: jsonEncode(body))
+              .then((value) => print(value.body));
 
           setState(() {
             _currentPosition = path.last;
@@ -200,7 +218,8 @@ class _MapUiState extends State<MapUi> {
                   borderRadius: const BorderRadius.only(
                       bottomRight: Radius.circular(40.0),
                       bottomLeft: Radius.circular(40.0)),
-                  color: Colors.white.withOpacity(0.9),
+                  color:
+                      Theme.of(context).colorScheme.background.withOpacity(0.9),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),

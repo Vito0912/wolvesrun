@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:wolvesrun/pages/NavBarBuilder.dart';
+import 'package:wolvesrun/pages/auth/sign_in_ui.dart';
 import 'package:wolvesrun/pages/map/map_ui.dart';
 import 'package:wolvesrun/pages/settings/setting_ui.dart';
 import 'package:wolvesrun/services/NotifcationService.dart';
 import 'package:wolvesrun/globals.dart' as globals;
-import 'package:wolvesrun/util/Prefernces.dart';
+import 'package:wolvesrun/util/MainUtil.dart';
+import 'package:wolvesrun/util/Preferences.dart';
 
 import 'generated/l10n.dart';
 
@@ -21,7 +23,15 @@ Future<void> main() async {
   globals.useDarkTheme =
       await sp.getBool("useDarkTheme") ?? globals.useDarkTheme;
 
+  globals.token = await sp.getString("token");
+
   await NotificationService().requestPermissions();
+
+  globals.hasConnection = await MainUtil.hasInternetConnection();
+
+  if(globals.hasConnection) {
+    globals.user = await MainUtil.retrieveUserInformation();
+  }
 
   runApp(const MyApp());
 }
@@ -37,7 +47,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
+        brightness: Brightness.light,
       ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal, brightness: Brightness.dark),
+        useMaterial3: true,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        brightness: Brightness.dark,
+      ),
+      themeMode: globals.useDarkTheme ? ThemeMode.dark : ThemeMode.light,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -57,37 +75,54 @@ class MyApp extends StatelessWidget {
         return S.of(context).settingsTitle;
       },
       supportedLocales: const AppLocalizationDelegate().supportedLocales,
-      home: Builder(builder: (context) {
-        return PersistentTabView(
-          tabs: [
-            PersistentTabConfig(
-              screen: Placeholder(),
-              item: ItemConfig(
-                icon: Icon(Icons.home),
-                title: "Home",
+      initialRoute: "/",
+      routes: {
+        '/': (context) => Builder(builder: (context) {
+          return PersistentTabView(
+            tabs: [
+              PersistentTabConfig(
+                screen: SignInUi(),
+                item: ItemConfig(
+                  icon: Icon(Icons.home),
+                  title: "Home",
+                ),
               ),
-            ),
-            PersistentTabConfig(
-              screen: MapUi(),
-              item: ItemConfig(
-                icon: Icon(Icons.map_rounded),
-                title: "Map",
+              PersistentTabConfig(
+                screen: MapUi(),
+                item: ItemConfig(
+                  icon: Icon(Icons.map_rounded),
+                  title: "Map",
+                ),
               ),
-            ),
-            PersistentTabConfig(
-              screen: const SettingUi(),
-              item: ItemConfig(
-                icon: Icon(Icons.settings),
-                title: S.of(context).settingsTitle,
+              PersistentTabConfig(
+                screen: const SettingUi(),
+                item: ItemConfig(
+                  icon: Icon(Icons.settings),
+                  title: S.of(context).settingsTitle,
+                ),
               ),
+            ],
+            navBarBuilder: (navBarConfig) => CustomNavBar(
+              navBarConfig: navBarConfig,
+              navBarDecoration: NavBarDecoration(
+                color: Theme.of(context).colorScheme.background,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 8,
+                    )
+                  ],
+              ),
+              key: const Key("navBar"),
             ),
-          ],
-          navBarBuilder: (navBarConfig) => CustomNavBar(
-            navBarConfig: navBarConfig,
-            key: const Key("navBar"),
-          ),
-        );
-      }),
+          );
+        }),
+        '/signIn': (context) => const SignInUi(),
+      },
     );
   }
 }

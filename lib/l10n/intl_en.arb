@@ -15,5 +15,8 @@
   "version": "Version",
     "author": "Author",
     "license": "License",
-  "errorLoadingData": "There was an error loading the data."
+  "errorLoadingData": "There was an error loading the data.",
+  "serverUrl": "Server URL",
+  "emailusername": "Email/Username",
+  "password": "Password"
 }

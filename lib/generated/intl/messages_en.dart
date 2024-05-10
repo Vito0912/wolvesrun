@@ -26,12 +26,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "author": MessageLookupByLibrary.simpleMessage("Author"),
         "commonHeading": MessageLookupByLibrary.simpleMessage("Common"),
         "dark": MessageLookupByLibrary.simpleMessage("Dark Mode"),
+        "emailusername": MessageLookupByLibrary.simpleMessage("Email/Username"),
         "errorLoadingData": MessageLookupByLibrary.simpleMessage(
             "There was an error loading the data."),
         "language": MessageLookupByLibrary.simpleMessage("Language"),
         "license": MessageLookupByLibrary.simpleMessage("License"),
         "light": MessageLookupByLibrary.simpleMessage("Light Mode"),
         "other": MessageLookupByLibrary.simpleMessage("Other"),
+        "password": MessageLookupByLibrary.simpleMessage("Password"),
+        "serverUrl": MessageLookupByLibrary.simpleMessage("Server URL"),
         "settingsTitle": MessageLookupByLibrary.simpleMessage("Settings"),
         "system": MessageLookupByLibrary.simpleMessage("System"),
         "systemInformations":

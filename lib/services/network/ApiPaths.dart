@@ -13,4 +13,8 @@ class ApiPaths {
       '$fullApiUrl/resources/spawn?lat=$latitude&lng=$longitude';
 
   static String get position => '$fullApiUrl/position';
+
+  static String get userInformation => '$fullApiUrl/user';
+
+  static String get login => '$fullApiUrl/login';
 }

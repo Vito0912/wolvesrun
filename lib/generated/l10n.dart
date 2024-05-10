@@ -199,6 +199,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Server URL`
+  String get serverUrl {
+    return Intl.message(
+      'Server URL',
+      name: 'serverUrl',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email/Username`
+  String get emailusername {
+    return Intl.message(
+      'Email/Username',
+      name: 'emailusername',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password`
+  String get password {
+    return Intl.message(
+      'Password',
+      name: 'password',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
