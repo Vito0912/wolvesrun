@@ -1,20 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dio_cache_interceptor_db_store/dio_cache_interceptor_db_store.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wolvesrun/models/BetterPosition.dart';
 import 'package:http/http.dart' as http;
+import 'package:wolvesrun/pages/map/TopNotch.dart';
+import 'package:wolvesrun/pages/map/run/StartRunDialog.dart';
 import 'package:wolvesrun/services/network/ApiHeaders.dart';
 import 'package:wolvesrun/services/network/ApiPaths.dart';
+import 'package:wolvesrun/globals.dart' as globals;
 
 class MapUi extends StatefulWidget {
   const MapUi({super.key});
@@ -30,10 +30,9 @@ class _MapUiState extends State<MapUi> {
   );
 
   List<BetterPosition> path = [];
-  String? _temporaryPath;
 
   BetterPosition? _currentPosition; // default starting position
-  CachedTileProvider? _cachedTileProvider;
+  final CachedTileProvider _cachedTileProvider = globals.cachedTileProvider!;
   Path _path = Path();
   StreamSubscription<Position>? _positionStream;
 
@@ -43,14 +42,6 @@ class _MapUiState extends State<MapUi> {
   @override
   void initState() {
     super.initState();
-
-    getPath().then((value) => setState(() {
-          _temporaryPath = value;
-
-          _cachedTileProvider = CachedTileProvider(
-              store: DbCacheStore(
-                  databasePath: _temporaryPath!, databaseName: 'TileCache'));
-        }));
 
     _positionStream =
         Geolocator.getPositionStream(locationSettings: locationSettings).listen(
@@ -109,18 +100,18 @@ class _MapUiState extends State<MapUi> {
             'heading': int.tryParse(position.heading.toString()),
             'speed': position.speed.toString(),
             'timestamp': position.timestamp.toString(),
-            'run_id': 1,
+            'run_id': 2,
           };
           print(body);
           http
               .post(Uri.parse(ApiPaths.position),
-                  headers: ApiHeaders.headersWithToken,
-                  body: jsonEncode(body))
+                  headers: ApiHeaders.headersWithToken, body: jsonEncode(body))
               .then((value) => print(value.body));
 
           setState(() {
             _currentPosition = path.last;
             _path = Path.from(path.map((position) => position.latLng).toList());
+            print(_path[0].longitude);
             if (_path.nrOfCoordinates >= 3) {
               const double stepDistance = 8;
               if (_path.distance >= stepDistance * 2.0) {
@@ -137,14 +128,9 @@ class _MapUiState extends State<MapUi> {
   @override
   void dispose() {
     _positionStream?.cancel();
-    _cachedTileProvider?.dispose();
     super.dispose();
   }
 
-  Future<String> getPath() async {
-    final cacheDirectory = await getTemporaryDirectory();
-    return cacheDirectory.path;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,22 +145,9 @@ class _MapUiState extends State<MapUi> {
             options: const MapOptions(maxZoom: 18, minZoom: 2, initialZoom: 2),
             children: [
               TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate: globals.mapProviderURL,
                 userAgentPackageName: 'de.vito.wolvesrun',
-                tileProvider:
-                    (_temporaryPath != null && _cachedTileProvider != null)
-                        ? _cachedTileProvider
-                        : null,
-              ),
-              RichAttributionWidget(
-                animationConfig: const ScaleRAWA(),
-                attributions: [
-                  TextSourceAttribution(
-                    'OpenStreetMap contributors',
-                    onTap: () => launchUrl(
-                        Uri.parse('https://openstreetmap.org/copyright')),
-                  ),
-                ],
+                tileProvider: _cachedTileProvider,
               ),
               _currentPosition != null
                   ? MarkerLayer(
@@ -211,59 +184,54 @@ class _MapUiState extends State<MapUi> {
                   color: Colors.red,
                 )
               ]),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 100,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                      bottomRight: Radius.circular(40.0),
-                      bottomLeft: Radius.circular(40.0)),
-                  color:
-                      Theme.of(context).colorScheme.background.withOpacity(0.9),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Distance: ${_path.distance.toStringAsFixed(2)} m',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            'Real distance: ${BetterPosition.calculateTotalDistance(path)} m',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Duration: ${BetterPosition.calculateTotalTimeAndFormat(path)}',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Waypoints: ${_path.coordinates.length}/${path.length}',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            'Pos: ${_currentPosition?.latLng.latitude.toStringAsFixed(6)}, ${_currentPosition?.latLng.longitude.toStringAsFixed(6)}',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  RichAttributionWidget(
+                    animationConfig: const ScaleRAWA(),
+                    attributions: [
+                      TextSourceAttribution(
+                        'OpenStreetMap contributors',
+                        onTap: () => launchUrl(
+                            Uri.parse('https://openstreetmap.org/copyright')),
                       ),
                     ],
                   ),
+                  SizedBox(height: 52,)
+                ],
+              ),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(24),
+                            topRight: Radius.circular(24),
+                        ),
+                        color: Theme.of(context).canvasColor,
+                      ),
+                      child: IconButton(
+                        iconSize: 48,
+                        icon: const Icon(Icons.add_circle_outline_outlined),
+                        onPressed: () {
+                          StartRunDialog.show(context);
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 52,)
+                  ],
                 ),
-              )
+              ),
+              TopNotch(
+                  distance: _path.distance.toStringAsFixed(2),
+                  realDistance: BetterPosition.calculateTotalDistance(path)
+                      .toStringAsFixed(2),
+                  duration: BetterPosition.calculateTotalTimeAndFormat(path),
+                  waypoints: '${_path.coordinates.length}/${path.length}',
+                  position:
+                      '${_currentPosition?.latLng.latitude.toStringAsFixed(6)}, ${_currentPosition?.latLng.longitude.toStringAsFixed(6)}')
             ],
           ),
         ],

@@ -4,6 +4,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:wolvesrun/pages/NavBarBuilder.dart';
 import 'package:wolvesrun/pages/auth/sign_in_ui.dart';
+import 'package:wolvesrun/pages/main/run/DetailedRun.dart';
+import 'package:wolvesrun/pages/main/run/RunUI.dart';
 import 'package:wolvesrun/pages/map/map_ui.dart';
 import 'package:wolvesrun/pages/settings/setting_ui.dart';
 import 'package:wolvesrun/services/NotifcationService.dart';
@@ -29,9 +31,13 @@ Future<void> main() async {
 
   globals.hasConnection = await MainUtil.hasInternetConnection();
 
+  print(globals.hasConnection);
+
   if(globals.hasConnection) {
     globals.user = await MainUtil.retrieveUserInformation();
   }
+
+  await MainUtil.getCachedTileProvider();
 
   runApp(const MyApp());
 }
@@ -81,7 +87,7 @@ class MyApp extends StatelessWidget {
           return PersistentTabView(
             tabs: [
               PersistentTabConfig(
-                screen: SignInUi(),
+                screen: const RunUi(),
                 item: ItemConfig(
                   icon: Icon(Icons.home),
                   title: "Home",
@@ -122,6 +128,7 @@ class MyApp extends StatelessWidget {
           );
         }),
         '/signIn': (context) => const SignInUi(),
+        DetailedRun.routeName: (context) => DetailedRun(),
       },
     );
   }

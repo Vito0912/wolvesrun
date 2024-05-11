@@ -9,7 +9,7 @@ class LaravelError extends Laravel{
   factory LaravelError.fromJson(Map<String, dynamic> json) {
     return LaravelError(
       message: json['message'] ?? 'Unknown error',
-      errors: json['errors'] ?? {},
+      errors: json['errors'] ?? json['error'] ?? {},
     );
   }
 

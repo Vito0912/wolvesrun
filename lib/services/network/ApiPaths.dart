@@ -17,4 +17,8 @@ class ApiPaths {
   static String get userInformation => '$fullApiUrl/user';
 
   static String get login => '$fullApiUrl/login';
+
+  static String get runs => '$fullApiUrl/runs';
+
+  static String run(int id) => '$fullApiUrl/run/$id';
 }

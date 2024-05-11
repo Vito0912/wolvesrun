@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:wolvesrun/generated/l10n.dart';
 import 'package:wolvesrun/models/Laravel.dart';
 import 'package:wolvesrun/models/LaravelError.dart';
 import 'package:wolvesrun/models/LaravelValidationError.dart';
@@ -12,17 +13,25 @@ class DB {
       http.Response response, BuildContext context, String header) {
     if (response.statusCode < 400) return;
 
+    print(response.statusCode);
+
     Laravel? error;
     Map<String, dynamic> json = jsonDecode(response.body);
 
     try {
       if (response.statusCode == 400) {
         error = ValidationError.fromJson(json);
+      } else if(response.statusCode == 401) {
+        error = LaravelError(message: S.current.unauthorized, errors: {
+          'token': S.current.unauthorized
+        });
       } else {
         error = LaravelError.fromJson(json);
       }
     } catch (_) {
-      error = LaravelError(message: 'Unknown error', errors: {});
+      error = LaravelError(message: 'Unknown error', errors: {
+        'error': json['error'] ?? 'Unknown error'
+      });
     }
 
     NetworkSnackbar.showSnackbar(

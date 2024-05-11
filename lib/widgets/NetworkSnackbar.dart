@@ -12,7 +12,7 @@ class NetworkSnackbar {
         content: Row(
           children: [
             Icon(icon, color: Theme.of(context).scaffoldBackgroundColor),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -23,18 +23,15 @@ class NetworkSnackbar {
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).scaffoldBackgroundColor)),
-                  ...messages
-                      .map((message) => Text(message,
-                          style: TextStyle(
-                              color:
-                                  Theme.of(context).scaffoldBackgroundColor)))
-                      .toList(),
+                  ...messages.map((message) => Text(message,
+                      style: TextStyle(
+                          color: Theme.of(context).scaffoldBackgroundColor))),
                 ],
               ),
             ),
           ],
         ),
-        duration: Duration(seconds: 4),
+        duration: const Duration(seconds: 4),
         behavior: SnackBarBehavior.floating,
       ),
     );

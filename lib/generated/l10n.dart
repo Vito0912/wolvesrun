@@ -229,6 +229,256 @@ class S {
       args: [],
     );
   }
+
+  /// `Select your activity`
+  String get selectYourActivity {
+    return Intl.message(
+      'Select your activity',
+      name: 'selectYourActivity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The choice of your activity affects the amount of resources generated and their positioning (e.g., bike paths, running paths).`
+  String get activitySelectDescription {
+    return Intl.message(
+      'The choice of your activity affects the amount of resources generated and their positioning (e.g., bike paths, running paths).',
+      name: 'activitySelectDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Run`
+  String get run {
+    return Intl.message(
+      'Run',
+      name: 'run',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Walk`
+  String get walk {
+    return Intl.message(
+      'Walk',
+      name: 'walk',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bike`
+  String get bike {
+    return Intl.message(
+      'Bike',
+      name: 'bike',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select difficulty`
+  String get selectDifficulty {
+    return Intl.message(
+      'Select difficulty',
+      name: 'selectDifficulty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The selection of difficulty affects the number and challenge of events, as well as the amount of items lost. Higher difficulties result in better items spawning.`
+  String get selectDifficultyDescription {
+    return Intl.message(
+      'The selection of difficulty affects the number and challenge of events, as well as the amount of items lost. Higher difficulties result in better items spawning.',
+      name: 'selectDifficultyDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Easy`
+  String get easy {
+    return Intl.message(
+      'Easy',
+      name: 'easy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Medium`
+  String get medium {
+    return Intl.message(
+      'Medium',
+      name: 'medium',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hard`
+  String get hard {
+    return Intl.message(
+      'Hard',
+      name: 'hard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Keep items`
+  String get keepItems {
+    return Intl.message(
+      'Keep items',
+      name: 'keepItems',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `During events, items can be lost, for example, if one is too slow. This setting prevents the loss of items but does not deactivate the events.`
+  String get keepItemsDescription {
+    return Intl.message(
+      'During events, items can be lost, for example, if one is too slow. This setting prevents the loss of items but does not deactivate the events.',
+      name: 'keepItemsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Disable Events`
+  String get disableEvents {
+    return Intl.message(
+      'Disable Events',
+      name: 'disableEvents',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Disables events. The difficulty is not affected by this. However, rewards from successful events are disabled.`
+  String get disableEventsDescription {
+    return Intl.message(
+      'Disables events. The difficulty is not affected by this. However, rewards from successful events are disabled.',
+      name: 'disableEventsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Precision`
+  String get precision {
+    return Intl.message(
+      'Precision',
+      name: 'precision',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Defines the precision of the recorded path. More precision means means higher battery consumption.`
+  String get precisionDescription {
+    return Intl.message(
+      'Defines the precision of the recorded path. More precision means means higher battery consumption.',
+      name: 'precisionDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Battery saving`
+  String get batterySaving {
+    return Intl.message(
+      'Battery saving',
+      name: 'batterySaving',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Low`
+  String get low {
+    return Intl.message(
+      'Low',
+      name: 'low',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Balanced`
+  String get balanced {
+    return Intl.message(
+      'Balanced',
+      name: 'balanced',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `High`
+  String get high {
+    return Intl.message(
+      'High',
+      name: 'high',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel`
+  String get cancel {
+    return Intl.message(
+      'Cancel',
+      name: 'cancel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start`
+  String get start {
+    return Intl.message(
+      'Start',
+      name: 'start',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `If you choose this setting, the recording quality will be very poor. This is particularly true for fast activities, which may result in curves being cut and items possibly not being collected properly. Choose this setting only if you want to collect items, but do not intend to use the track for accurate results.`
+  String get batterySavingInformation {
+    return Intl.message(
+      'If you choose this setting, the recording quality will be very poor. This is particularly true for fast activities, which may result in curves being cut and items possibly not being collected properly. Choose this setting only if you want to collect items, but do not intend to use the track for accurate results.',
+      name: 'batterySavingInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use it anyway`
+  String get useItAnyway {
+    return Intl.message(
+      'Use it anyway',
+      name: 'useItAnyway',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unauthorized`
+  String get unauthorized {
+    return Intl.message(
+      'Unauthorized',
+      name: 'unauthorized',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

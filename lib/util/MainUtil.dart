@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dio_cache_interceptor_db_store/dio_cache_interceptor_db_store.dart';
+import 'package:flutter_map_cache/flutter_map_cache.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:wolvesrun/models/User.dart';
 import 'package:wolvesrun/globals.dart' as globals;
 import 'package:http/http.dart' as http;
@@ -9,13 +12,11 @@ import 'package:wolvesrun/services/network/ApiHeaders.dart';
 import 'package:wolvesrun/services/network/ApiPaths.dart';
 
 class MainUtil {
-
   static Future<User?> retrieveUserInformation() async {
     if (globals.hasConnection && globals.token != null) {
       http.Response response = await http.get(
           Uri.parse(ApiPaths.userInformation),
-        headers: ApiHeaders.headersWithToken
-      );
+          headers: ApiHeaders.headersWithToken);
       print(response.body);
       if (response.statusCode == 200) {
         return User.fromJson(jsonDecode(response.body));
@@ -23,12 +24,11 @@ class MainUtil {
     }
 
     return null;
-
   }
 
   static Future<bool> hasInternetConnection() async {
-
-    final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
+    final List<ConnectivityResult> connectivityResult =
+        await (Connectivity().checkConnectivity());
 
     globals.connectionTypes = connectivityResult;
 
@@ -37,8 +37,6 @@ class MainUtil {
     } else if (connectivityResult.contains(ConnectivityResult.wifi)) {
       return hasRealConnection();
     } else if (connectivityResult.contains(ConnectivityResult.ethernet)) {
-      return hasRealConnection();
-    } else if (connectivityResult.contains(ConnectivityResult.vpn)) {
       return hasRealConnection();
     } else if (connectivityResult.contains(ConnectivityResult.other)) {
       return hasRealConnection();
@@ -52,7 +50,8 @@ class MainUtil {
 
   static Future<bool> hasRealConnection() async {
     try {
-      final result = await InternetAddress.lookup(Uri.parse(globals.wolvesRunServer).host);
+      final result =
+          await InternetAddress.lookup(Uri.parse(globals.wolvesRunServer).host);
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         return true;
       }
@@ -62,4 +61,14 @@ class MainUtil {
     return false;
   }
 
+  static Future<CachedTileProvider> getCachedTileProvider() async {
+    String tmpPath = (await getTemporaryDirectory()).path;
+
+    globals.temporaryPath = tmpPath;
+
+    globals.cachedTileProvider = CachedTileProvider(
+        store: DbCacheStore(databasePath: tmpPath, databaseName: 'TileCache'));
+
+    return globals.cachedTileProvider!;
+  }
 }
