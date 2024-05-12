@@ -479,6 +479,36 @@ class S {
       args: [],
     );
   }
+
+  /// `WolvesRun is recording your location.`
+  String get wolvesrunIsRecordingYourLocation {
+    return Intl.message(
+      'WolvesRun is recording your location.',
+      name: 'wolvesrunIsRecordingYourLocation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `WolvesRun - Recording`
+  String get wolvesrunRecording {
+    return Intl.message(
+      'WolvesRun - Recording',
+      name: 'wolvesrunRecording',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Position Update`
+  String get positionUpdate {
+    return Intl.message(
+      'Position Update',
+      name: 'positionUpdate',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

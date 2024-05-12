@@ -43,5 +43,8 @@
   "start": "Start",
   "batterySavingInformation": "If you choose this setting, the recording quality will be very poor. This is particularly true for fast activities, which may result in curves being cut and items possibly not being collected properly. Choose this setting only if you want to collect items, but do not intend to use the track for accurate results.",
   "useItAnyway": "Use it anyway",
-  "unauthorized": "Unauthorized"
+  "unauthorized": "Unauthorized",
+  "wolvesrunIsRecordingYourLocation": "WolvesRun is recording your location.",
+  "wolvesrunRecording": "WolvesRun - Recording",
+  "positionUpdate": "Position Update"
 }

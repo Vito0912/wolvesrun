@@ -71,4 +71,9 @@ class MainUtil {
 
     return globals.cachedTileProvider!;
   }
+
+  static Future<void> setAppDocumentDirectory() async {
+    String dirPath = (await getApplicationDocumentsDirectory()).path;
+    globals.directoryPath = dirPath;
+  }
 }

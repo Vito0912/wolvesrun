@@ -53,6 +53,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "medium": MessageLookupByLibrary.simpleMessage("Medium"),
         "other": MessageLookupByLibrary.simpleMessage("Other"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
+        "positionUpdate":
+            MessageLookupByLibrary.simpleMessage("Position Update"),
         "precision": MessageLookupByLibrary.simpleMessage("Precision"),
         "precisionDescription": MessageLookupByLibrary.simpleMessage(
             "Defines the precision of the recorded path. More precision means means higher battery consumption."),
@@ -75,6 +77,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "unauthorized": MessageLookupByLibrary.simpleMessage("Unauthorized"),
         "useItAnyway": MessageLookupByLibrary.simpleMessage("Use it anyway"),
         "version": MessageLookupByLibrary.simpleMessage("Version"),
-        "walk": MessageLookupByLibrary.simpleMessage("Walk")
+        "walk": MessageLookupByLibrary.simpleMessage("Walk"),
+        "wolvesrunIsRecordingYourLocation":
+            MessageLookupByLibrary.simpleMessage(
+                "WolvesRun is recording your location."),
+        "wolvesrunRecording":
+            MessageLookupByLibrary.simpleMessage("WolvesRun - Recording")
       };
 }

@@ -1,4 +1,3 @@
-import 'package:background_location/background_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
@@ -27,6 +26,8 @@ Future<void> main() async {
 
   globals.token = await sp.getString("token");
 
+  globals.lastRunId = await sp.getInt("lastRunId");
+
   await NotificationService().requestPermissions();
 
   globals.hasConnection = await MainUtil.hasInternetConnection();
@@ -38,6 +39,8 @@ Future<void> main() async {
   }
 
   await MainUtil.getCachedTileProvider();
+
+  await MainUtil.setAppDocumentDirectory();
 
   runApp(const MyApp());
 }
@@ -69,15 +72,6 @@ class MyApp extends StatelessWidget {
         S.delegate
       ],
       onGenerateTitle: (BuildContext context) {
-        BackgroundLocation.setAndroidNotification(
-          title: S.current.settingsTitle,
-          message: "Notification message",
-          icon: "@mipmap/ic_launcher",
-        );
-
-        BackgroundLocation.setAndroidConfiguration(3000);
-        BackgroundLocation.startLocationService();
-
         return S.of(context).settingsTitle;
       },
       supportedLocales: const AppLocalizationDelegate().supportedLocales,

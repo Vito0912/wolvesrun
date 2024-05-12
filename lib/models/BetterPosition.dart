@@ -12,9 +12,10 @@ class BetterPosition {
   final double speed;
   final double speedAccuracy;
   final double altitudeAccuracy;
+  bool uploaded;
 
   // Existing detailed constructor remains unchanged, assuming all fields are initialized directly
-  const BetterPosition({
+  BetterPosition({
     required this.runId,
     required this.userId,
     required this.latLng,
@@ -24,7 +25,8 @@ class BetterPosition {
     required this.altitudeAccuracy,
     required this.heading,
     required this.speed,
-    required this.speedAccuracy
+    required this.speedAccuracy,
+    this.uploaded = false,
   });
 
   // Corrected constructor that takes a Position object and two integers
@@ -32,6 +34,7 @@ class BetterPosition {
     required Position position,
     required this.runId,
     required this.userId,
+    this.uploaded = false,
   }) : latLng = LatLng(position.latitude, position.longitude),
         timestamp = position.timestamp,
         accuracy = position.accuracy,

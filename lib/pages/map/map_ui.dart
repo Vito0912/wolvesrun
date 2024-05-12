@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -10,11 +10,15 @@ import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wolvesrun/models/BetterPosition.dart';
 import 'package:http/http.dart' as http;
+import 'package:wolvesrun/models/arguments/StartRunDialogResult.dart';
 import 'package:wolvesrun/pages/map/TopNotch.dart';
 import 'package:wolvesrun/pages/map/run/StartRunDialog.dart';
-import 'package:wolvesrun/services/network/ApiHeaders.dart';
-import 'package:wolvesrun/services/network/ApiPaths.dart';
+import 'package:wolvesrun/services/database/AppDatabase.dart' as db;
+import 'package:wolvesrun/util/LocationUtil.dart';
 import 'package:wolvesrun/globals.dart' as globals;
+import 'package:wolvesrun/services/network/database/PositionDB.dart'
+    as position_db;
+import 'package:wolvesrun/util/Preferences.dart';
 
 class MapUi extends StatefulWidget {
   const MapUi({super.key});
@@ -24,7 +28,7 @@ class MapUi extends StatefulWidget {
 }
 
 class _MapUiState extends State<MapUi> {
-  final LocationSettings locationSettings = const LocationSettings(
+  LocationSettings locationSettings = const LocationSettings(
     accuracy: LocationAccuracy.bestForNavigation,
     distanceFilter: 0,
   );
@@ -35,94 +39,22 @@ class _MapUiState extends State<MapUi> {
   final CachedTileProvider _cachedTileProvider = globals.cachedTileProvider!;
   Path _path = Path();
   StreamSubscription<Position>? _positionStream;
+  bool _firstPosition = true;
 
   MapController mapController = MapController();
-  List<Marker> _markerList = [];
+  final List<Marker> _markerList = [];
 
   @override
   void initState() {
     super.initState();
 
     _positionStream =
-        Geolocator.getPositionStream(locationSettings: locationSettings).listen(
-      (Position? position) {
-        if (position != null) {
-          path.add(BetterPosition.fromPosition(
-              position: position, runId: 1, userId: 1));
-          print(path);
-          if (path.length == 1) {
-            mapController.move(path.first.latLng, 15);
-            http
-                .get(Uri.parse(ApiPaths.itemPoints(
-                    path.first.latLng.longitude, path.first.latLng.latitude)))
-                .then((http.Response value) {
-              jsonDecode(value.body)['response'].forEach((value) {
-                _markerList.add(Marker(
-                  point: LatLng(value['lat'], value['lng']),
-                  width: 16,
-                  height: 16,
-                  child: const Icon(
-                    Icons.outlined_flag,
-                    color: Colors.redAccent,
-                  ),
-                ));
-              });
-              dynamic json = jsonDecode(value.body);
-              _markerList.add(Marker(
-                point: LatLng(json['data']['sw_corner']['latitude'],
-                    json['data']['sw_corner']['longitude']),
-                width: 16,
-                height: 16,
-                child: const Icon(
-                  Icons.outlined_flag,
-                  color: Colors.green,
-                ),
-              ));
-
-              _markerList.add(Marker(
-                point: LatLng(json['data']['ne_corner']['latitude'],
-                    json['data']['ne_corner']['longitude']),
-                width: 16,
-                height: 16,
-                child: const Icon(
-                  Icons.outlined_flag,
-                  color: Colors.green,
-                ),
-              ));
-            });
-          }
-
-          final body = {
-            'lat': position.latitude.toString(),
-            'lng': position.longitude.toString(),
-            'accuracy': position.accuracy.toString(),
-            'altitude': position.altitude.toString(),
-            'heading': int.tryParse(position.heading.toString()),
-            'speed': position.speed.toString(),
-            'timestamp': position.timestamp.toString(),
-            'run_id': 2,
-          };
-          print(body);
-          http
-              .post(Uri.parse(ApiPaths.position),
-                  headers: ApiHeaders.headersWithToken, body: jsonEncode(body))
-              .then((value) => print(value.body));
-
-          setState(() {
-            _currentPosition = path.last;
-            _path = Path.from(path.map((position) => position.latLng).toList());
-            print(_path[0].longitude);
-            if (_path.nrOfCoordinates >= 3) {
-              const double stepDistance = 8;
-              if (_path.distance >= stepDistance * 2.0) {
-                _path = _path.equalize(stepDistance, smoothPath: true);
-              }
-            }
-          });
-          print(position);
-        }
-      },
-    );
+        Geolocator.getPositionStream(locationSettings: locationSettings)
+            .listen((Position? position) async {
+      if (position != null) {
+        await _handlePositionUpdate(position);
+      }
+    });
   }
 
   @override
@@ -130,7 +62,6 @@ class _MapUiState extends State<MapUi> {
     _positionStream?.cancel();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -197,7 +128,9 @@ class _MapUiState extends State<MapUi> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 52,)
+                  SizedBox(
+                    height: 52,
+                  )
                 ],
               ),
               Center(
@@ -207,20 +140,48 @@ class _MapUiState extends State<MapUi> {
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(24),
-                            topRight: Radius.circular(24),
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(24),
                         ),
                         color: Theme.of(context).canvasColor,
                       ),
-                      child: IconButton(
-                        iconSize: 48,
-                        icon: const Icon(Icons.add_circle_outline_outlined),
-                        onPressed: () {
-                          StartRunDialog.show(context);
-                        },
-                      ),
+                      child: !globals.recording
+                          ? IconButton(
+                              iconSize: 48,
+                              icon:
+                                  const Icon(Icons.add_circle_outline_outlined),
+                              onPressed: () async {
+                                StartRunDialogResult result =
+                                    await StartRunDialog.show(context);
+                                if (result.start) {
+                                  globals.recording = true;
+                                  globals.runId = (globals.lastRunId ?? 0) + 1;
+                                  globals.lastRunId = globals.runId;
+                                  SP().updateInt('lastRunId', globals.runId!);
+                                  _insertRun(result.activity);
+                                  _changePositionStream(result.precision);
+                                  LocationUtil.enableBackgroundLocation(
+                                      result.precision);
+                                }
+                              },
+                            )
+                          : IconButton(
+                              iconSize: 48,
+                              icon: const Icon(
+                                  Icons.pause_circle_outline_outlined),
+                              onPressed: () async {
+                                LocationUtil.disableBackgroundLocation();
+                                globals.recording = false;
+                                path = [];
+                                _path = Path();
+                                globals.runId = null;
+                                setState(() {});
+                              },
+                            ),
                     ),
-                    SizedBox(height: 52,)
+                    SizedBox(
+                      height: 52,
+                    )
                   ],
                 ),
               ),
@@ -238,4 +199,133 @@ class _MapUiState extends State<MapUi> {
       ),
     );
   }
+
+  _changePositionStream(int precision) {
+    _positionStream?.cancel();
+
+    LocationAccuracy? accuracy;
+
+    switch (precision) {
+      case 0:
+        accuracy = LocationAccuracy.low;
+        break;
+      case 1:
+        accuracy = LocationAccuracy.medium;
+        break;
+      case 2:
+        accuracy = LocationAccuracy.bestForNavigation;
+        break;
+      case 3:
+        accuracy = LocationAccuracy.bestForNavigation;
+        break;
+    }
+
+    locationSettings = LocationSettings(
+      accuracy: accuracy!,
+      distanceFilter: 0,
+    );
+
+    _positionStream =
+        Geolocator.getPositionStream(locationSettings: locationSettings)
+            .listen((Position? position) async {
+      if (position != null) {
+        await _handlePositionUpdate(position);
+      }
+    });
+  }
+
+  _handlePositionUpdate(Position position) async {
+    if (_firstPosition) {
+      mapController.move(LatLng(position.latitude, position.longitude), 15);
+      _firstPosition = false;
+    }
+
+    _currentPosition =
+        BetterPosition.fromPosition(position: position, runId: 1, userId: 1);
+
+    if (globals.recording && globals.runId != null) {
+      await _handleRecordingPosition(position);
+    }
+
+    setState(() {});
+  }
+
+  _handleRecordingPosition(Position position) async {
+    path.add(BetterPosition.fromPosition(
+        position: position, runId: globals.runId!, userId: 2));
+    if (path.length == 1) {
+      /*
+      http
+          .get(Uri.parse(ApiPaths.itemPoints(
+              path.first.latLng.longitude, path.first.latLng.latitude)))
+          .then((http.Response value) {
+        jsonDecode(value.body)['response'].forEach((value) {
+          _markerList.add(Marker(
+            point: LatLng(value['lat'], value['lng']),
+            width: 16,
+            height: 16,
+            child: const Icon(
+              Icons.outlined_flag,
+              color: Colors.redAccent,
+            ),
+          ));
+        });
+      });
+    }
+
+       */
+    }
+
+    _path = Path.from(path.map((position) => position.latLng).toList());
+    if (_path.nrOfCoordinates >= 3) {
+      const double stepDistance = 8;
+      if (_path.distance >= stepDistance * 2.0) {
+        _path = _path.equalize(stepDistance, smoothPath: true);
+      }
+    }
+
+    bool uploaded = false;
+
+    if (globals.hasConnection) {
+      http.Response res = await position_db.PositionDB.add(
+          context: context, position: position, runId: 100);
+      if (res.statusCode == 200) {
+        path.last.uploaded = true;
+        uploaded = true;
+      }
+    }
+
+    drift.Value<int?> userId = drift.Value(globals.user?.userId);
+
+    db.AppDatabase dbi = globals.database;
+    await dbi.into(dbi.positions).insert(db.PositionsCompanion.insert(
+        runId: globals.runId!,
+        userId: userId,
+        latitude: position.latitude,
+        longitude: position.longitude,
+        altitude: drift.Value(position.altitude),
+        speed: drift.Value(position.speed),
+        accuracy: drift.Value(position.accuracy),
+        heading: drift.Value(int.tryParse(position.heading.toString())),
+        timestamp: position.timestamp,
+        uploaded: drift.Value(uploaded),
+    ));
+
+    print(position);
+  }
+
+  _insertRun(int type) {
+    db.AppDatabase dbi = globals.database;
+    dbi.into(dbi.runs).insert(db.RunsCompanion.insert(
+          userId: drift.Value(globals.user?.userId),
+          name: 'Run ${globals.runId}',
+          description: 'Run ${globals.runId}',
+          type: type,
+          updatedAt: drift.Value(DateTime.now()),
+          createdAt: drift.Value(DateTime.now()),
+          id: drift.Value(globals.runId!)
+        ));
+  }
+
+  _handleOnlinePosition(Position position) {}
 }

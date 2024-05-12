@@ -2,15 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:wolvesrun/generated/l10n.dart';
+import 'package:wolvesrun/models/arguments/StartRunDialogResult.dart';
 import 'package:wolvesrun/widgets/TooltipText.dart';
 
 class StartRunDialog {
-  static Future<void> show(BuildContext context) async {
+  static Future<StartRunDialogResult> show(BuildContext context) async {
     bool _keepItems = false;
     bool _disableEvents = false;
     int _activity = 1;
     int _difficulty = 1;
     int _precision = 2;
+    bool start = false;
 
     await showDialog(
       context: context,
@@ -164,6 +166,7 @@ class StartRunDialog {
             ElevatedButton(
               child: Text(S.of(context).start),
               onPressed: () {
+                start = true;
                 Navigator.of(context).pop();
                 // Start the run
               },
@@ -172,5 +175,15 @@ class StartRunDialog {
         );
       },
     );
+
+    return StartRunDialogResult(
+      keepItems: _keepItems,
+      disableEvents: _disableEvents,
+      activity: _activity,
+      difficulty: _difficulty,
+      precision: _precision,
+      start: start,
+    );
   }
+
 }

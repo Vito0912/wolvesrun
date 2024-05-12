@@ -1,3 +1,4 @@
+import 'package:drift_db_viewer/drift_db_viewer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -102,6 +103,7 @@ class _SettingUiState extends State<SettingUi> {
                   value: FutureBuilder<PackageInfo>(
                     future: PackageInfo.fromPlatform(), // the async operation
                     builder: (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
+                      int _tapCount = 0;
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         // Show some sort of loading UI
                         return const CircularProgressIndicator();
@@ -110,15 +112,24 @@ class _SettingUiState extends State<SettingUi> {
                         return Text('Error: ${snapshot.error}');
                       } else if (snapshot.hasData) {
                         // Data is received, so we can show the UI with data
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('App Name: ${snapshot.data!.appName}'),
-                            Text('Package Name: ${snapshot.data!.packageName}'),
-                            Text('Version: ${snapshot.data!.version}'),
-                            Text('Build Number: ${snapshot.data!.buildNumber}'),
-                          ],
+                        return GestureDetector(
+                          onTap: () {
+                            _tapCount++;
+                            if(_tapCount == 10) {
+                              _tapCount = 0;
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => DriftDbViewer(globals.database)));
+                            }
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text('App Name: ${snapshot.data!.appName}'),
+                              Text('Package Name: ${snapshot.data!.packageName}'),
+                              Text('Version: ${snapshot.data!.version}'),
+                              Text('Build Number: ${snapshot.data!.buildNumber}'),
+                            ],
+                          ),
                         );
                       } else {
                         // This shouldn't happen as we should be in one of the other states

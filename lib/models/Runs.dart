@@ -1,12 +1,14 @@
+import 'package:wolvesrun/services/database/AppDatabase.dart' as db;
+
 class Runs {
   List<Data> data;
-  Links links;
-  Meta meta;
+  Links? links;
+  Meta? meta;
 
   Runs({
     required this.data,
-    required this.links,
-    required this.meta,
+    this.links,
+    this.meta,
   });
 
   factory Runs.fromJson(Map<String, dynamic> json) => Runs(
@@ -30,16 +32,17 @@ class Runs {
 
 class Data {
   DateTime createdAt;
-  DateTime updatedAt;
+  DateTime? updatedAt;
   int id;
   String name;
   dynamic description;
   int type;
   String avSpeed;
   String distance;
-  int userId;
+  int? userId;
   bool online = false;
   bool local = false;
+  db.SyncStatus? syncStatus;
 
   factory Data.fromJson(Map<String, dynamic> json) {
     return Data(
@@ -59,16 +62,17 @@ class Data {
 
   Data({
     required this.createdAt,
-    required this.updatedAt,
+    this.updatedAt,
     required this.id,
     required this.name,
     required this.description,
     required this.type,
     required this.avSpeed,
     required this.distance,
-    required this.userId,
+    this.userId,
     this.online = false,
     this.local = false,
+    this.syncStatus,
   });
 
   Data copyWith({
