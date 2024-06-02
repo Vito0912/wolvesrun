@@ -74,4 +74,5 @@ class BetterPosition {
   static String formatDuration(Duration duration) {
     return '${duration.inHours} hours, ${duration.inMinutes.remainder(60)} minutes, ${duration.inSeconds.remainder(60)} seconds';
   }
+
 }

@@ -9,8 +9,8 @@ class ApiPaths {
 
   static String get auth => '$fullApiUrl/auth';
 
-  static String itemPoints(double longitude, double latitude) =>
-      '$fullApiUrl/resources/spawn?lat=$latitude&lng=$longitude';
+  static String itemPoints(int x, int y, int activityType) =>
+      '$fullApiUrl/resources/spawn?x=$x&y=$y&activity_type=$activityType';
 
   static String get position => '$fullApiUrl/position';
 
@@ -20,5 +20,9 @@ class ApiPaths {
 
   static String get runs => '$fullApiUrl/runs';
 
+  static String get resourceImages => '$fullApiUrl/resources/images';
+
   static String run(int id) => '$fullApiUrl/run/$id';
+
+  static String get health => '$fullApiUrl/health';
 }

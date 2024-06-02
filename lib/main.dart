@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:wolvesrun/pages/NavBarBuilder.dart';
 import 'package:wolvesrun/pages/auth/sign_in_ui.dart';
@@ -13,10 +14,12 @@ import 'package:wolvesrun/util/MainUtil.dart';
 import 'package:wolvesrun/util/Preferences.dart';
 
 import 'generated/l10n.dart';
+import 'models/arguments/DetailedRunArguments.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SP sp = SP();
+
 
   globals.wolvesRunServer =
       await sp.getString("server") ?? globals.wolvesRunServer;
@@ -32,17 +35,21 @@ Future<void> main() async {
 
   globals.hasConnection = await MainUtil.hasInternetConnection();
 
-  print(globals.hasConnection);
-
   if(globals.hasConnection) {
-    globals.user = await MainUtil.retrieveUserInformation();
+    try {
+      globals.user = await MainUtil.retrieveUserInformation();
+    } catch (_) {
+      globals.hasConnection = false;
+    }
   }
+
+  globals.gridSize = await sp.getInt("gridSize") ?? 500;
 
   await MainUtil.getCachedTileProvider();
 
   await MainUtil.setAppDocumentDirectory();
 
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -122,8 +129,21 @@ class MyApp extends StatelessWidget {
           );
         }),
         '/signIn': (context) => const SignInUi(),
-        DetailedRun.routeName: (context) => DetailedRun(),
       },
+      onGenerateRoute: (settings) {
+        if (settings.name == DetailedRun.routeName) {
+          final args = settings.arguments as DetailedRunArguments;
+          print(args);
+          return MaterialPageRoute(
+            builder: (context) {
+              return DetailedRun(
+                args: args,
+              );
+            },
+          );
+        }
+        return null;
+      }
     );
   }
 }

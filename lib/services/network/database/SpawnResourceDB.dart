@@ -4,31 +4,35 @@ import 'package:wolvesrun/services/network/ApiHeaders.dart';
 import 'package:wolvesrun/services/network/ApiPaths.dart';
 import 'package:wolvesrun/services/network/database/DB.dart';
 
-class RunDB extends DB {
-  static Future<http.Response> get({
+class SpawnResourceDB extends DB {
+  static Future<http.Response> images({
     required BuildContext? context,
     bool hideError = false,
   }) async {
     return await DB.request(
       method: DBMethod.GET,
-      url: ApiPaths.runs,
-      headers: ApiHeaders.headersWithToken,
+      url: ApiPaths.resourceImages,
+      headers: ApiHeaders.headersWithToken ?? ApiHeaders.headers,
       context: context,
-      header: 'Runs',
+      header: 'Resource Images',
       hideError: true,
     );
   }
 
-  static Future<http.Response> getById({
-    required int id,
+  static Future<http.Response> getResources({
+    required int x,
+    required int y,
+    required int activityType,
     required BuildContext? context,
+    bool hideError = false,
   }) async {
     return await DB.request(
       method: DBMethod.GET,
-      url: ApiPaths.run(id),
-      headers: ApiHeaders.headersWithToken,
+      url: ApiPaths.itemPoints(x, y, activityType),
+      headers: ApiHeaders.headersWithToken ?? ApiHeaders.headers,
       context: context,
-      header: 'Run',
+      header: 'Resources',
+      hideError: true,
     );
   }
 }

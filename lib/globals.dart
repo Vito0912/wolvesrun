@@ -1,6 +1,7 @@
 library wolvesrun.globals;
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:wolvesrun/models/User.dart';
 import 'package:wolvesrun/services/database/AppDatabase.dart';
@@ -24,3 +25,6 @@ int? runId;
 int? lastRunId;
 
 AppDatabase database = AppDatabase.instance();
+
+int? gridSize;
+Map<int, Image> resourceImages = {};

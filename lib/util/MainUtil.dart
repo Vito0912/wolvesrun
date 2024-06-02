@@ -10,6 +10,7 @@ import 'package:wolvesrun/globals.dart' as globals;
 import 'package:http/http.dart' as http;
 import 'package:wolvesrun/services/network/ApiHeaders.dart';
 import 'package:wolvesrun/services/network/ApiPaths.dart';
+import 'package:wolvesrun/services/network/database/HealtDB.dart';
 
 class MainUtil {
   static Future<User?> retrieveUserInformation() async {
@@ -53,7 +54,11 @@ class MainUtil {
       final result =
           await InternetAddress.lookup(Uri.parse(globals.wolvesRunServer).host);
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        return true;
+        final health = await HealthDB.health(context: null, hideError: true);
+        if(health.statusCode == 200) {
+          return true;
+        }
+        return false;
       }
     } on SocketException catch (_) {
       return false;

@@ -31,7 +31,7 @@ class AppDatabase extends _$AppDatabase {
 
     if (positions.isEmpty) {
       // If no positions are found, we may consider it as not synced or handle it separately
-      return SyncStatus.notSynced;
+      return SyncStatus.notLocal;
     }
 
     // Count the number of positions that have been uploaded
@@ -79,5 +79,6 @@ LazyDatabase _openConnection() {
 enum SyncStatus {
   notSynced,
   synced,
-  partial
+  partial,
+  notLocal
 }

@@ -12,11 +12,10 @@ class Runs {
   });
 
   factory Runs.fromJson(Map<String, dynamic> json) => Runs(
-    data: (json['data'] as List).map((x) => Data.fromJson(x)).toList(),
-    links: Links.fromJson(json['links']),
-    meta: Meta.fromJson(json['meta']),
-  );
-
+        data: (json['data'] as List).map((x) => Data.fromJson(x)).toList(),
+        links: Links.fromJson(json['links']),
+        meta: Meta.fromJson(json['meta']),
+      );
 
   Runs copyWith({
     List<Data>? data,
@@ -37,26 +36,58 @@ class Data {
   String name;
   dynamic description;
   int type;
-  String avSpeed;
-  String distance;
+  double? totalDistance;
+  double? totalAscent;
+  double? totalDescent;
+  DateTime? startTime;
+  DateTime? endTime;
+  int? duration;
+  double? maxSpeed;
+  double? avgSpeed;
+  double? minutesPerKm;
   int? userId;
-  bool online = false;
-  bool local = false;
+  bool online;
+  bool local;
   db.SyncStatus? syncStatus;
 
   factory Data.fromJson(Map<String, dynamic> json) {
     return Data(
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
-      id: json['id'],
-      name: json['name'],
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : null,
+      id: json['id'] as int,
+      name: json['name'] as String,
       description: json['description'],
-      type: json['type'],
-      avSpeed: json['avSpeed'],
-      distance: json['distance'],
-      userId: json['user_id'],
-      online: true,
-      local: false,
+      type: json['type'] as int,
+      totalDistance: json['total_distance'] != null
+          ? (json['total_distance'] as num).toDouble()
+          : null,
+      totalAscent: json['total_ascent'] != null
+          ? (json['total_ascent'] as num).toDouble()
+          : null,
+      totalDescent: json['total_descent'] != null
+          ? (json['total_descent'] as num).toDouble()
+          : null,
+      startTime: json['start_time'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              (json['start_time'] as int) * 1000)
+          : null,
+      endTime: json['end_time'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(
+              (json['end_time'] as int) * 1000)
+          : null,
+      duration: json['duration'] as int?,
+      maxSpeed: json['max_speed'] != null
+          ? (json['max_speed'] as num).toDouble()
+          : null,
+      avgSpeed: json['avg_speed'] != null
+          ? (json['avg_speed'] as num).toDouble()
+          : null,
+      minutesPerKm: json['minutes_per_km'] != null
+          ? (json['minutes_per_km'] as num).toDouble()
+          : null,
+      userId: json['user_id'] as int?,
     );
   }
 
@@ -67,8 +98,15 @@ class Data {
     required this.name,
     required this.description,
     required this.type,
-    required this.avSpeed,
-    required this.distance,
+    this.totalDistance,
+    this.totalAscent,
+    this.totalDescent,
+    this.startTime,
+    this.endTime,
+    this.duration,
+    this.maxSpeed,
+    this.avgSpeed,
+    this.minutesPerKm,
     this.userId,
     this.online = false,
     this.local = false,
@@ -82,8 +120,15 @@ class Data {
     String? name,
     dynamic description,
     int? type,
-    String? avSpeed,
-    String? distance,
+    double? totalDistance,
+    double? totalAscent,
+    double? totalDescent,
+    DateTime? startTime,
+    DateTime? endTime,
+    int? duration,
+    double? maxSpeed,
+    double? avgSpeed,
+    double? minutesPerKm,
     int? userId,
   }) =>
       Data(
@@ -93,8 +138,15 @@ class Data {
         name: name ?? this.name,
         description: description ?? this.description,
         type: type ?? this.type,
-        avSpeed: avSpeed ?? this.avSpeed,
-        distance: distance ?? this.distance,
+        totalDistance: totalDistance ?? this.totalDistance,
+        totalAscent: totalAscent ?? this.totalAscent,
+        totalDescent: totalDescent ?? this.totalDescent,
+        startTime: startTime ?? this.startTime,
+        endTime: endTime ?? this.endTime,
+        duration: duration ?? this.duration,
+        maxSpeed: maxSpeed ?? this.maxSpeed,
+        avgSpeed: avgSpeed ?? this.avgSpeed,
+        minutesPerKm: minutesPerKm ?? this.minutesPerKm,
         userId: userId ?? this.userId,
       );
 }
@@ -113,12 +165,11 @@ class Links {
   });
 
   factory Links.fromJson(Map<String, dynamic> json) => Links(
-    first: json['first'],
-    last: json['last'],
-    prev: json['prev'],
-    next: json['next'],
-  );
-
+        first: json['first'],
+        last: json['last'],
+        prev: json['prev'],
+        next: json['next'],
+      );
 
   Links copyWith({
     String? first,
@@ -156,16 +207,15 @@ class Meta {
   });
 
   factory Meta.fromJson(Map<String, dynamic> json) => Meta(
-    currentPage: json['current_page'],
-    from: json['from'],
-    lastPage: json['last_page'],
-    links: List<Link>.from(json['links'].map((x) => Link.fromJson(x))),
-    path: json['path'],
-    perPage: json['per_page'],
-    to: json['to'],
-    total: json['total'],
-  );
-
+        currentPage: json['current_page'],
+        from: json['from'],
+        lastPage: json['last_page'],
+        links: List<Link>.from(json['links'].map((x) => Link.fromJson(x))),
+        path: json['path'],
+        perPage: json['per_page'],
+        to: json['to'],
+        total: json['total'],
+      );
 
   Meta copyWith({
     int? currentPage,
@@ -201,11 +251,10 @@ class Link {
   });
 
   factory Link.fromJson(Map<String, dynamic> json) => Link(
-    url: json['url'],
-    label: json['label'],
-    active: json['active'],
-  );
-
+        url: json['url'],
+        label: json['label'],
+        active: json['active'],
+      );
 
   Link copyWith({
     String? url,
