@@ -41,6 +41,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "emailusername": MessageLookupByLibrary.simpleMessage("Email/Username"),
         "errorLoadingData": MessageLookupByLibrary.simpleMessage(
             "There was an error loading the data."),
+        "fetchingResources": MessageLookupByLibrary.simpleMessage(
+            "Currently fetching new resources"),
         "hard": MessageLookupByLibrary.simpleMessage("Hard"),
         "high": MessageLookupByLibrary.simpleMessage("High"),
         "keepItems": MessageLookupByLibrary.simpleMessage("Keep items"),
@@ -51,6 +53,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "light": MessageLookupByLibrary.simpleMessage("Light Mode"),
         "low": MessageLookupByLibrary.simpleMessage("Low"),
         "medium": MessageLookupByLibrary.simpleMessage("Medium"),
+        "openstreetmapContributors":
+            MessageLookupByLibrary.simpleMessage("OpenStreetMap contributors"),
         "other": MessageLookupByLibrary.simpleMessage("Other"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "positionUpdate":

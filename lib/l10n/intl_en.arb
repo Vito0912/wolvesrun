@@ -46,5 +46,7 @@
   "unauthorized": "Unauthorized",
   "wolvesrunIsRecordingYourLocation": "WolvesRun is recording your location.",
   "wolvesrunRecording": "WolvesRun - Recording",
-  "positionUpdate": "Position Update"
+  "positionUpdate": "Position Update",
+  "fetchingResources": "Currently fetching new resources",
+  "openstreetmapContributors": "OpenStreetMap contributors"
 }

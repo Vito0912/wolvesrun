@@ -509,6 +509,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Currently fetching new resources`
+  String get fetchingResources {
+    return Intl.message(
+      'Currently fetching new resources',
+      name: 'fetchingResources',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `OpenStreetMap contributors`
+  String get openstreetmapContributors {
+    return Intl.message(
+      'OpenStreetMap contributors',
+      name: 'openstreetmapContributors',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

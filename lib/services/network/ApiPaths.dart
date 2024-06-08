@@ -10,7 +10,7 @@ class ApiPaths {
   static String get auth => '$fullApiUrl/auth';
 
   static String itemPoints(int x, int y, int activityType) =>
-      '$fullApiUrl/resources/spawn?x=$x&y=$y&activity_type=$activityType';
+      '$fullApiUrl/resources/spawn?x=$x&y=$y&activity_type=$activityType&multiplier=10';
 
   static String get position => '$fullApiUrl/position';
 
