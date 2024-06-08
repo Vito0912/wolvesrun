@@ -142,7 +142,7 @@ class _MapUiState extends State<MapUi> {
                         rotate: marker.rotate,
                         child: marker.child,
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               PolylineLayer(polylines: [
@@ -187,8 +187,6 @@ class _MapUiState extends State<MapUi> {
 
   void _handlePositionUpdateDebounced(Position? position) async {
     if (position != null) {
-      // Debounce the position update to reduce frequency
-      await Future.delayed(Duration(milliseconds: 200));
       await _handlePositionUpdate(position);
     }
   }
